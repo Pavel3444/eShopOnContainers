@@ -49,29 +49,67 @@ public static class API
 
     public static class Catalog
     {
-        public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type)
+        // public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice)
+        // {
+        //     var filterQs = "";
+        //
+        //     if (type.HasValue)
+        //     {
+        //         var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
+        //         filterQs = $"/type/{type.Value}/brand/{brandQs}";
+        //
+        //     }
+        //     else if (brand.HasValue)
+        //     {
+        //         var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
+        //         filterQs = $"/type/all/brand/{brandQs}";
+        //     }
+        //     else
+        //     {
+        //         filterQs = string.Empty;
+        //     }
+        //     
+        //     string url = $"{baseUri}items{filterQs}?pageIndex={page}&pageSize={take}";
+        //     if (minPrice.HasValue)
+        //     {
+        //         url += $"&minPrice={minPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+        //     }
+        //     if (maxPrice.HasValue)
+        //     {
+        //         url += $"&maxPrice={maxPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+        //     }
+        //     return url;
+        // }
+        public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice)
         {
-            var filterQs = "";
+            var queryParams = new List<string>
+            {
+                $"pageIndex={page}",
+                $"pageSize={take}"
+            };
+
+            if (brand.HasValue)
+            {
+                queryParams.Add($"catalogBrandId={brand.Value}");
+            }
 
             if (type.HasValue)
             {
-                var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
-                filterQs = $"/type/{type.Value}/brand/{brandQs}";
-
-            }
-            else if (brand.HasValue)
-            {
-                var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
-                filterQs = $"/type/all/brand/{brandQs}";
-            }
-            else
-            {
-                filterQs = string.Empty;
+                queryParams.Add($"catalogTypeId={type.Value}");
             }
 
-            return $"{baseUri}items{filterQs}?pageIndex={page}&pageSize={take}";
+            if (minPrice.HasValue)
+            {
+                queryParams.Add($"minPrice={minPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (maxPrice.HasValue)
+            {
+                queryParams.Add($"maxPrice={maxPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            return $"{baseUri}items?{string.Join("&", queryParams)}";
         }
-
         public static string GetAllBrands(string baseUri)
         {
             return $"{baseUri}catalogBrands";
