@@ -12,14 +12,9 @@ inputs:
 runs:
   using: "composite"
   steps:
-  - name: Install Docker Compose
-    shell: bash
-    run: |
-      sudo apt-get update
-      sudo apt-get install -y docker-compose
   - name: Compose build ${{ inputs.service }}
     shell: bash  
-    run: sudo -E docker-compose build ${{ inputs.service }}
+    run: docker-compose build ${{ inputs.service }}
     working-directory: ./src
     env:
       TAG: ${{ env.BRANCH }}
