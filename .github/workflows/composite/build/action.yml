@@ -14,7 +14,7 @@ runs:
   steps:
   - name: Compose build ${{ inputs.service }}
     shell: bash  
-    run: docker-compose build ${{ inputs.service }}
+    run: docker compose build ${{ inputs.service }}
     working-directory: ./src
     env:
       TAG: ${{ env.BRANCH }}
