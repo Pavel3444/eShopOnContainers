@@ -23,19 +23,27 @@ export class CatalogService {
         });
     }
 
-    getCatalog(pageIndex: number, pageSize: number, brand: number, type: number): Observable<ICatalog> {
-        let url = this.catalogUrl;
-
+    getCatalog(pageIndex: number, pageSize: number, brand: number, type: number, minPrice: number, maxPrice: number): Observable<ICatalog> {
+        let url = `${this.catalogUrl}?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+        let params = {
+            pageIndex,
+            pageSize,
+        };
+        
+        if (brand) {
+            url += `&catalogBrandId=${brand}`;
+        }
         if (type) {
-            url = this.catalogUrl + '/type/' + type.toString() + '/brand/' + ((brand) ? brand.toString() : '');
+            url += `&catalogTypeId=${type}`;
         }
-        else if (brand) {
-            url = this.catalogUrl + '/type/all' + '/brand/' + ((brand) ? brand.toString() : '');
+        if (minPrice != null) {
+            url += `&minPrice=${minPrice}`;
         }
-      
-        url = url + '?pageIndex=' + pageIndex + '&pageSize=' + pageSize;
-
-        return this.service.get(url).pipe<ICatalog>(tap((response: any) => {
+        if (maxPrice != null) {
+            url += `&maxPrice=${maxPrice}`;
+        }
+        
+        return this.service.get(url, params).pipe<ICatalog>(tap((response: any) => {
             return response;
         }));
     }

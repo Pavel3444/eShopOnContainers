@@ -16,6 +16,23 @@
                     <option *ngFor="let type of types" [value]="type.id">{{type.type}}</option>
                 </select>
             </div>
+  
+            <div class="esh-catalog-filter-wrapper">
+                <label class="esh-catalog-label" for="minPrice">Min Price</label>
+                <input type="text"
+                       class="form-control"
+                       id="minPrice"
+                       placeholder="Min Price"
+                       (change)="onMinPriceChanged($event)">
+            </div>
+            <div class="esh-catalog-filter-wrapper">
+                <label class="esh-catalog-label" for="maxPrice">Max Price</label>
+                < <input type="text"
+                         class="form-control"
+                         id="maxPrice"
+                         placeholder="Max Price"
+                         (change)="onMaxPriceChanged($event)">
+            </div>
             <button 
                 type="button" 
                 class="btn btn-primary"
