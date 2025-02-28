@@ -83,8 +83,7 @@ public class CatalogController : ControllerBase
     
     itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
 
-    var model = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-    return Ok(model);
+    return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
 }
 
      private async Task<List<CatalogItem>> GetItemsByIdsAsync(string ids)
