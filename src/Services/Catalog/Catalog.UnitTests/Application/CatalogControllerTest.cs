@@ -34,12 +34,11 @@ public class CatalogControllerTest
     }
     
     [Theory]
-    [InlineData(4, 1, 1, 2, 10, 100, null, 6, 2)]
-    public async Task ItemsUnifiedAsync_ReturnsFilteredPagedResults()
-    {
+    [InlineData(4, 1, 1, 2, 10m, 100m, null, 6, 2)]
+    public async Task ItemsUnifiedAsync_ReturnsFilteredPagedResults(
         int pageSize, int pageIndex, int? catalogBrandId, int? catalogTypeId, decimal? minPrice, decimal? maxPrice,
-        string? name, int expectedTotalItems, int expectedItemsInPage;
-        
+        string? name, int expectedTotalItems, int expectedItemsInPage)
+    {
         var catalogContext = new CatalogContext(_dbOptions);
         
         var catalogSettings = new TestCatalogSettings();
