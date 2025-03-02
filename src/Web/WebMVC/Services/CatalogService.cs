@@ -5,7 +5,6 @@ public class CatalogService : ICatalogService
     private readonly IOptions<AppSettings> _settings;
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogService> _logger;
-
     private readonly string _remoteServiceBaseUrl;
 
     public CatalogService(HttpClient httpClient, ILogger<CatalogService> logger, IOptions<AppSettings> settings)
@@ -13,7 +12,6 @@ public class CatalogService : ICatalogService
         _httpClient = httpClient;
         _settings = settings;
         _logger = logger;
-
         _remoteServiceBaseUrl = $"{_settings.Value.PurchaseUrl}/c/api/v1/catalog/";
     }
 

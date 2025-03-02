@@ -16,6 +16,7 @@ public class CatalogController : Controller
         [FromQuery] string errorMsg)
     {
         var itemsPage = 9;
+        
         var catalog = await _catalogSvc.GetCatalogItems(
             page ?? 0,
             itemsPage,

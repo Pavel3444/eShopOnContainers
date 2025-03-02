@@ -49,37 +49,6 @@ public static class API
 
     public static class Catalog
     {
-        // public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice)
-        // {
-        //     var filterQs = "";
-        //
-        //     if (type.HasValue)
-        //     {
-        //         var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
-        //         filterQs = $"/type/{type.Value}/brand/{brandQs}";
-        //
-        //     }
-        //     else if (brand.HasValue)
-        //     {
-        //         var brandQs = (brand.HasValue) ? brand.Value.ToString() : string.Empty;
-        //         filterQs = $"/type/all/brand/{brandQs}";
-        //     }
-        //     else
-        //     {
-        //         filterQs = string.Empty;
-        //     }
-        //     
-        //     string url = $"{baseUri}items{filterQs}?pageIndex={page}&pageSize={take}";
-        //     if (minPrice.HasValue)
-        //     {
-        //         url += $"&minPrice={minPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
-        //     }
-        //     if (maxPrice.HasValue)
-        //     {
-        //         url += $"&maxPrice={maxPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
-        //     }
-        //     return url;
-        // }
         public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice)
         {
             var queryParams = new List<string>
@@ -110,6 +79,7 @@ public static class API
 
             return $"{baseUri}items?{string.Join("&", queryParams)}";
         }
+       
         public static string GetAllBrands(string baseUri)
         {
             return $"{baseUri}catalogBrands";

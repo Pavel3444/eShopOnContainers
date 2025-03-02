@@ -25,6 +25,7 @@ export class CatalogService {
 
     getCatalog(pageIndex: number, pageSize: number, brand: number, type: number, minPrice: number, maxPrice: number): Observable<ICatalog> {
         let url = `${this.catalogUrl}?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+        
         let params = {
             pageIndex,
             pageSize,
@@ -33,12 +34,15 @@ export class CatalogService {
         if (brand) {
             url += `&catalogBrandId=${brand}`;
         }
+        
         if (type) {
             url += `&catalogTypeId=${type}`;
         }
+        
         if (minPrice != null) {
             url += `&minPrice=${minPrice}`;
         }
+        
         if (maxPrice != null) {
             url += `&maxPrice=${maxPrice}`;
         }

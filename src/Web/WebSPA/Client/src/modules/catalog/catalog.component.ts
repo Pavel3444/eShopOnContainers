@@ -77,10 +77,13 @@ export class CatalogComponent implements OnInit {
         this.typeSelected = value;
     }
     onInputPriceValidate(event: any) {
+        
         let value: string = event.target.value;
+        
         value = value.replace(/[^0-9.]/g, '');
 
         const firstDotIndex = value.indexOf('.');
+        
         if (firstDotIndex !== -1) {
             value = value.substring(0, firstDotIndex + 1) + value.substring(firstDotIndex + 1).replace(/\./g, '');
             const parts = value.split('.');
@@ -89,17 +92,20 @@ export class CatalogComponent implements OnInit {
                 value = parts.join('.');
             }
         }
+        
         return value ? parseFloat(value) : null;
     }
     onMinPriceChanged(event: any): void {
         const res = this.onInputPriceValidate(event);
+        
         event.target.value = res;
-            this.minPriceFilter = res;
+        this.minPriceFilter = res;
     }
     onMaxPriceChanged(event: any): void {
-            const res = this.onInputPriceValidate(event);
-            event.target.value = res;
-            this.maxPriceFilter =res;
+        const res = this.onInputPriceValidate(event);
+        
+        event.target.value = res;
+        this.maxPriceFilter =res;
     }
     
     onPageChanged(value: any) {
