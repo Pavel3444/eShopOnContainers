@@ -34,7 +34,7 @@ public class CatalogControllerTest
     }
     
     [Theory]
-    [InlineData(4, 1, 1, 2, 10m, 100m, null, 6, 2)]
+    [InlineData(4, 1, 1, 2, 10m, 100m, (string)null, 6, 2)]
     public async Task ItemsUnifiedAsync_ReturnsFilteredPagedResults(
         int pageSize, int pageIndex, int? catalogBrandId, int? catalogTypeId, decimal? minPrice, decimal? maxPrice,
         string? name, int expectedTotalItems, int expectedItemsInPage)
