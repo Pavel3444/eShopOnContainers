@@ -7,7 +7,6 @@ using Microsoft.eShopOnContainers.Services.Ordering.Domain.AggregatesModel.Order
 public class CreateOrderDraftCommandHandler
     : IRequestHandler<CreateOrderDraftCommand, OrderDraftDTO>
 {
-    private readonly IOrderRepository _orderRepository;
     private readonly IIdentityService _identityService;
     private readonly IMediator _mediator;
 

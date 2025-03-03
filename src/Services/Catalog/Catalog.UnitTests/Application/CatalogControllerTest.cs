@@ -14,12 +14,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace UnitTest.Catalog.Application;
+namespace Catalog.UnitTests.Application;
 
 public class CatalogControllerTest
 {
     private readonly DbContextOptions<CatalogContext> _dbOptions;
-
+    public static IEnumerable<object[]> ItemsUnifiedTestData =>
+        new List<object[]>
+        {
+            new object[] { 4, 1, 1, 2, 10m, 100m, 6, 2 }
+        };
+    
     public CatalogControllerTest()
     {
         _dbOptions = new DbContextOptionsBuilder<CatalogContext>()
@@ -34,10 +39,10 @@ public class CatalogControllerTest
     }
     
     [Theory]
-    [InlineData(4, 1, 1, 2, 10m, 100m, (string)null, 6, 2)]
+    [MemberData(nameof(ItemsUnifiedTestData))]
     public async Task ItemsUnifiedAsync_ReturnsFilteredPagedResults(
         int pageSize, int pageIndex, int? catalogBrandId, int? catalogTypeId, decimal? minPrice, decimal? maxPrice,
-        string? name, int expectedTotalItems, int expectedItemsInPage)
+         int expectedTotalItems, int expectedItemsInPage)
     {
         var catalogContext = new CatalogContext(_dbOptions);
         
@@ -54,8 +59,7 @@ public class CatalogControllerTest
             catalogBrandId, 
             catalogTypeId, 
             minPrice, 
-            maxPrice, 
-            name
+            maxPrice
         );
 
         Assert.IsType<ActionResult<PaginatedItemsViewModel<CatalogItem>>>(actionResult);
