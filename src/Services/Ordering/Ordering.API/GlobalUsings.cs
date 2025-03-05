@@ -71,7 +71,6 @@ global using RabbitMQ.Client;
 global using Serilog.Context;
 global using Serilog;
 global using Swashbuckle.AspNetCore.SwaggerGen;
-global using System.Collections.Generic;
 global using System.Data.Common;
 global using System.Data.SqlClient;
 global using System.IdentityModel.Tokens.Jwt;

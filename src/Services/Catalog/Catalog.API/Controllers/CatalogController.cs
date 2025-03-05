@@ -1,4 +1,5 @@
-﻿namespace Microsoft.eShopOnContainers.Services.Catalog.API.Controllers;
+﻿#nullable enable
+namespace Microsoft.eShopOnContainers.Services.Catalog.API.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
@@ -13,73 +14,103 @@ public class CatalogController : ControllerBase
         _catalogContext = context ?? throw new ArgumentNullException(nameof(context));
         _catalogIntegrationEventService = catalogIntegrationEventService ?? throw new ArgumentNullException(nameof(catalogIntegrationEventService));
         _settings = settings.Value;
-
         context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
-
+    
     // GET api/v1/[controller]/items[?pageSize=3&pageIndex=10]
     [HttpGet]
     [Route("items")]
     [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(IEnumerable<CatalogItem>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> ItemsAsync([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0, string ids = null)
+    public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsUnifiedAsync(
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int pageIndex = 0,
+        [FromQuery] string? ids = null,
+        [FromQuery] int? catalogBrandId = null,
+        [FromQuery] int? catalogTypeId = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null,
+        [FromQuery] string? name = null, 
+        [FromQuery] string? countryCode = null
+        )
     {
-        if (!string.IsNullOrEmpty(ids))
+    // request id
+    if (!string.IsNullOrEmpty(ids))
+    {
+        var items = await GetItemsByIdsAsync(ids);
+        if (!items.Any())
         {
-            var items = await GetItemsByIdsAsync(ids);
-
-            if (!items.Any())
-            {
-                return BadRequest("ids value invalid. Must be comma-separated list of numbers");
-            }
-
-            return Ok(items);
+            return BadRequest("ids value invalid. Must be comma-separated list of numbers");
         }
+        return Ok(new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, items.Count, items));
+    }
+    
+    IQueryable<CatalogItem> query = _catalogContext.CatalogItems.Include(c => c.CatalogBrand);
 
-        var totalItems = await _catalogContext.CatalogItems
-            .LongCountAsync();
-
-        var itemsOnPage = await _catalogContext.CatalogItems
-            .OrderBy(c => c.Name)
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-
-        /* The "awesome" fix for testing Devspaces */
-
-        /*
-        foreach (var pr in itemsOnPage) {
-            pr.Name = "Awesome " + pr.Name;
-        }
-
-        */
-
-        itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
-
-        var model = new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-
-        return Ok(model);
+    // request name
+    if (!string.IsNullOrEmpty(name))
+    {
+        query = query.Where(c => c.Name.StartsWith(name));
     }
 
-    private async Task<List<CatalogItem>> GetItemsByIdsAsync(string ids)
+    // request type
+    if (catalogTypeId.HasValue)
     {
-        var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out int x), Value: x));
-
-        if (!numIds.All(nid => nid.Ok))
-        {
-            return new List<CatalogItem>();
-        }
-
-        var idsToSelect = numIds
-            .Select(id => id.Value);
-
-        var items = await _catalogContext.CatalogItems.Where(ci => idsToSelect.Contains(ci.Id)).ToListAsync();
-
-        items = ChangeUriPlaceholder(items);
-
-        return items;
+        query = query.Where(c => c.CatalogTypeId == catalogTypeId.Value);
     }
+
+    // request brand
+    if (catalogBrandId.HasValue)
+    {
+        query = query.Where(c => c.CatalogBrandId == catalogBrandId.Value);
+    }
+
+    // request price
+    if (minPrice.HasValue)
+    {
+        query = query.Where(c => c.Price >= minPrice.Value);
+    }
+    
+    if (maxPrice.HasValue)
+    {
+        query = query.Where(c => c.Price <= maxPrice.Value);
+    }
+
+    if (!string.IsNullOrEmpty(countryCode))
+    {
+        query = query.Where(c => c.CatalogBrand.CountryCode == countryCode);
+    }
+    
+    var totalItems = await query.LongCountAsync();
+    
+    var itemsOnPage = await query
+        .OrderBy(c => c.Name)
+        .Skip(pageSize * pageIndex)
+        .Take(pageSize)
+        .ToListAsync();
+    
+    itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
+
+    return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
+}
+
+     private async Task<List<CatalogItem>> GetItemsByIdsAsync(string ids)
+     {
+         var numIds = ids.Split(',').Select(id => (Ok: int.TryParse(id, out int x), Value: x));
+
+         if (!numIds.All(nid => nid.Ok))
+         {
+             return new List<CatalogItem>();
+         }
+
+         var idsToSelect = numIds
+             .Select(id => id.Value);
+
+         var items = await _catalogContext.CatalogItems.Where(ci => idsToSelect.Contains(ci.Id)).ToListAsync();
+
+         items = ChangeUriPlaceholder(items);
+
+         return items;
+     }
 
     [HttpGet]
     [Route("items/{id:int}")]
@@ -94,7 +125,6 @@ public class CatalogController : ControllerBase
         }
 
         var item = await _catalogContext.CatalogItems.SingleOrDefaultAsync(ci => ci.Id == id);
-
         var baseUri = _settings.PicBaseUrl;
         var azureStorageEnabled = _settings.AzureStorageEnabled;
 
@@ -108,81 +138,7 @@ public class CatalogController : ControllerBase
         return NotFound();
     }
 
-    // GET api/v1/[controller]/items/withname/samplename[?pageSize=3&pageIndex=10]
-    [HttpGet]
-    [Route("items/withname/{name:minlength(1)}")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsWithNameAsync(string name, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
-    {
-        var totalItems = await _catalogContext.CatalogItems
-            .Where(c => c.Name.StartsWith(name))
-            .LongCountAsync();
-
-        var itemsOnPage = await _catalogContext.CatalogItems
-            .Where(c => c.Name.StartsWith(name))
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-
-        itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
-
-        return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-    }
-
-    // GET api/v1/[controller]/items/type/1/brand[?pageSize=3&pageIndex=10]
-    [HttpGet]
-    [Route("items/type/{catalogTypeId}/brand/{catalogBrandId:int?}")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsByTypeIdAndBrandIdAsync(int catalogTypeId, int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
-    {
-        var root = (IQueryable<CatalogItem>)_catalogContext.CatalogItems;
-
-        root = root.Where(ci => ci.CatalogTypeId == catalogTypeId);
-
-        if (catalogBrandId.HasValue)
-        {
-            root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
-        }
-
-        var totalItems = await root
-            .LongCountAsync();
-
-        var itemsOnPage = await root
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-
-        itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
-
-        return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-    }
-
-    // GET api/v1/[controller]/items/type/all/brand[?pageSize=3&pageIndex=10]
-    [HttpGet]
-    [Route("items/type/all/brand/{catalogBrandId:int?}")]
-    [ProducesResponseType(typeof(PaginatedItemsViewModel<CatalogItem>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsByBrandIdAsync(int? catalogBrandId, [FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 0)
-    {
-        var root = (IQueryable<CatalogItem>)_catalogContext.CatalogItems;
-
-        if (catalogBrandId.HasValue)
-        {
-            root = root.Where(ci => ci.CatalogBrandId == catalogBrandId);
-        }
-
-        var totalItems = await root
-            .LongCountAsync();
-
-        var itemsOnPage = await root
-            .Skip(pageSize * pageIndex)
-            .Take(pageSize)
-            .ToListAsync();
-
-        itemsOnPage = ChangeUriPlaceholder(itemsOnPage);
-
-        return new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage);
-    }
-
+    
     // GET api/v1/[controller]/CatalogTypes
     [HttpGet]
     [Route("catalogtypes")]

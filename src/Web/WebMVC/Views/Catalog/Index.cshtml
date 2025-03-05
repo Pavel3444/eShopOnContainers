@@ -18,7 +18,37 @@
             <label class="esh-catalog-label" data-title="type">
                 <select asp-for="@Model.TypesFilterApplied" asp-items="@Model.Types" class="esh-catalog-filter"></select>
             </label>
-            <input class="esh-catalog-send" type="image" src="~/images/arrow-right.svg" />
+            <label class="esh-catalog-label esh-catalog-input" data-title="Min Price">
+                <input
+                    type="text"
+                    asp-for="MinPriceFilterApplied"
+                    class="esh-catalog-filter"
+                    placeholder="Min. price"
+                    pattern="^\d+([.,]\d{1,2})?$"
+                    title="Enter a number with no more than two decimal places"
+				 />
+            </label>
+            <label class="esh-catalog-label esh-catalog-input" data-title="Max Price">
+                <input
+                    type="text"
+                    asp-for="MaxPriceFilterApplied"
+                    class="esh-catalog-filter"
+                    placeholder="Max. price"
+                    pattern="^\d+([.,]\d{1,2})?$"
+                    title="Enter a number with no more than two decimal places"
+                />
+            </label>
+            <label class="esh-catalog-label esh-catalog-input" data-title="Country of Origin">
+                <input
+                    type="text"
+                    asp-for="CountryCode"
+                    class="esh-catalog-filter"
+                    placeholder="Country Code"
+                    pattern="^[A-Za-z]+$"
+                    title="Please enter the country code in ISO Alpha-3 format (3 Latin letters)"
+               />
+            </label>
+            <input class="esh-catalog-send" type="image" src="~/images/arrow-right.svg" alt=""/>
         </form>
     </div>
 </section>

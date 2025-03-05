@@ -8,4 +8,7 @@ public class IndexViewModel
     public int? BrandFilterApplied { get; set; }
     public int? TypesFilterApplied { get; set; }
     public PaginationInfo PaginationInfo { get; set; }
+    public decimal? MinPriceFilterApplied { get; set; }
+    public decimal? MaxPriceFilterApplied { get; set; }
+    public string? CountryCode { get; set; }
 }

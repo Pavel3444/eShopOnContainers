@@ -5,7 +5,6 @@ public class CatalogService : ICatalogService
     private readonly IOptions<AppSettings> _settings;
     private readonly HttpClient _httpClient;
     private readonly ILogger<CatalogService> _logger;
-
     private readonly string _remoteServiceBaseUrl;
 
     public CatalogService(HttpClient httpClient, ILogger<CatalogService> logger, IOptions<AppSettings> settings)
@@ -13,13 +12,12 @@ public class CatalogService : ICatalogService
         _httpClient = httpClient;
         _settings = settings;
         _logger = logger;
-
         _remoteServiceBaseUrl = $"{_settings.Value.PurchaseUrl}/c/api/v1/catalog/";
     }
 
-    public async Task<Catalog> GetCatalogItems(int page, int take, int? brand, int? type)
+    public async Task<Catalog> GetCatalogItems(int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice, string? countryCode)
     {
-        var uri = API.Catalog.GetAllCatalogItems(_remoteServiceBaseUrl, page, take, brand, type);
+        var uri = API.Catalog.GetAllCatalogItems(_remoteServiceBaseUrl, page, take, brand, type, minPrice, maxPrice, countryCode);
 
         var responseString = await _httpClient.GetStringAsync(uri);
 

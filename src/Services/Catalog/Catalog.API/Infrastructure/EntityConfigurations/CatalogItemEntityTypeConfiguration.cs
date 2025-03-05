@@ -16,7 +16,8 @@ class CatalogItemEntityTypeConfiguration
             .HasMaxLength(50);
 
         builder.Property(ci => ci.Price)
-            .IsRequired(true);
+            .IsRequired(true)
+            .HasColumnType("decimal(18,2)");
 
         builder.Property(ci => ci.PictureFileName)
             .IsRequired(false);

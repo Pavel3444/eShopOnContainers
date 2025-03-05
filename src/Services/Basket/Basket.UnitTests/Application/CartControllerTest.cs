@@ -1,4 +1,6 @@
-﻿namespace UnitTest.Basket.Application;
+﻿using WebMVC.Services.ModelDTOs;
+
+namespace UnitTest.Basket.Application;
 
 public class CartControllerTest
 {
@@ -107,7 +109,7 @@ public class CartControllerTest
         {
             Id = 1,
             Name = "fakeName",
-            CatalogBrand = "fakeBrand",
+            CatalogBrand = new CatalogBrandDTO { Id = 2, Brand = "fakeBrand", CountryCode = "USA"},
             CatalogType = "fakeType",
             CatalogBrandId = 2,
             CatalogTypeId = 5,

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure;
 
@@ -10,9 +11,11 @@ using Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure;
 namespace Catalog.API.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogContext))]
-    partial class CatalogContextModelSnapshot : ModelSnapshot
+    [Migration("20250304191637_AddCountryCodeToCatalogBrand")]
+    partial class AddCountryCodeToCatalogBrand
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,6 +48,7 @@ namespace Catalog.API.Infrastructure.Migrations
 
                     b.Property<string>("CountryCode")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)")
                         .HasDefaultValue("GBR");

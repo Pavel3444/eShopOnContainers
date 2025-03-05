@@ -8,12 +8,18 @@ version: '3.4'
 
 services:
   seq:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ACCEPT_EULA=Y
     ports:
       - "5340:80"
 
   sqldata:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - SA_PASSWORD=Pass@word
       - ACCEPT_EULA=Y
@@ -23,22 +29,41 @@ services:
       - eshop-sqldata:/var/opt/mssql
 
   nosqldata:
+    platform: linux/amd64
+    env_file:
+      - .env
     ports:
       - "27017:27017"
     volumes:
       - eshop-nosqldata:/data/db
 
   basketdata:
+    platform: linux/amd64
+    env_file:
+      - .env
     ports:
       - "6379:6379"
     volumes:
       - eshop-basketdata:/data
   rabbitmq:
+    image: rabbitmq:3.9-management-alpine
+    environment:
+        - RABBITMQ_DEFAULT_USER=guest
+        - RABBITMQ_DEFAULT_PASS=guest
+        - RABBITMQ_DEFAULT_VHOST=/
+    platform: linux/amd64
+    env_file:
+        - .env
     ports:
       - "15672:15672"
       - "5672:5672"
-
+    restart: always
+    
+    
   identity-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -59,6 +84,9 @@ services:
       - "5105:80"
 
   basket-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -80,6 +108,9 @@ services:
       - "9103:81"
 
   catalog-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionString=${ESHOP_AZURE_CATALOG_DB:-Server=sqldata;Database=Microsoft.eShopOnContainers.Services.CatalogDb;User Id=sa;Password=Pass@word;Encrypt=False;TrustServerCertificate=true}
@@ -102,6 +133,9 @@ services:
       - "9101:81"
 
   ordering-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -127,6 +161,9 @@ services:
       - "9102:81"
 
   ordering-backgroundtasks:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -146,6 +183,9 @@ services:
       - "5111:80"
 
   payment-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -161,6 +201,9 @@ services:
       - "5108:80"
 
   webhooks-api:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -174,6 +217,9 @@ services:
       - "5113:80"
 
   mobileshoppingapigw:
+    platform: linux/amd64
+    env_file:
+      - .env
     volumes:
       - ./ApiGateways/Envoy/config/mobileshopping:/etc/envoy
     ports:
@@ -181,6 +227,9 @@ services:
     - "15200:8001"
 
   webshoppingapigw:
+    platform: linux/amd64
+    env_file:
+      - .env
     volumes:
       - ./ApiGateways/Envoy/config/webshopping:/etc/envoy
     ports:
@@ -188,6 +237,9 @@ services:
     - "15202:8001"
 
   mobileshoppingagg:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - urls__basket=http://basket-api
@@ -207,6 +259,9 @@ services:
       - "5120:80"
 
   webshoppingagg:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - urls__basket=http://basket-api
@@ -226,6 +281,9 @@ services:
       - "5121:80"
 
   ordering-signalrhub:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -240,6 +298,9 @@ services:
       - "5112:80"
 
   webstatus:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -271,6 +332,9 @@ services:
       - "5107:80"
 
   webspa:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -285,6 +349,9 @@ services:
       - "5104:80"
 
   webmvc:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
@@ -300,6 +367,9 @@ services:
       - "5100:80"
 
   webhooks-client:
+    platform: linux/amd64
+    env_file:
+      - .env
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - Token=6168DB8D-DC58-4094-AF24-483278923590      # Webhooks are registered with this token (any value is valid) but the client won't check it

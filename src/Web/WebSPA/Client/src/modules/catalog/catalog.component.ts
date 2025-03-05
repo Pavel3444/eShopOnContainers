@@ -27,6 +27,9 @@ export class CatalogComponent implements OnInit {
     authenticated: boolean = false;
     authSubscription: Subscription;
     errorReceived: boolean;
+    minPriceFilter: number | null = null;
+    maxPriceFilter: number | null = null;
+    countryCode: string | null = null; 
 
     constructor(private service: CatalogService, private basketService: BasketWrapperService, private configurationService: ConfigurationService, private securityService: SecurityService) {
         this.authenticated = securityService.IsAuthorized;
@@ -59,8 +62,11 @@ export class CatalogComponent implements OnInit {
         
         this.brandSelected = this.brandSelected && this.brandSelected.toString() != "null" ? this.brandSelected : null;
         this.typeSelected = this.typeSelected && this.typeSelected.toString() != "null" ? this.typeSelected : null;
+        this.minPriceFilter = this.minPriceFilter && this.minPriceFilter.toString() !== "null" ? this.minPriceFilter : null;
+        this.maxPriceFilter = this.maxPriceFilter  && this.maxPriceFilter.toString() !== "null" ? this.maxPriceFilter : null;
+        this.countryCode = this.countryCode  && this.countryCode.toString() !== "null" ? this.countryCode : null;
         this.paginationInfo.actualPage = 0;
-        this.getCatalog(this.paginationInfo.itemsPage, this.paginationInfo.actualPage, this.brandSelected, this.typeSelected);
+        this.getCatalog(this.paginationInfo.itemsPage, this.paginationInfo.actualPage, this.brandSelected, this.typeSelected, this.minPriceFilter, this.maxPriceFilter, this.countryCode);
     }
 
     onBrandFilterChanged(event: any, value: number) {
@@ -72,7 +78,44 @@ export class CatalogComponent implements OnInit {
         event.preventDefault();
         this.typeSelected = value;
     }
+    onInputPriceValidate(event: any) {
+        
+        let value: string = event.target.value;
+        
+        value = value.replace(/[^0-9.]/g, '');
 
+        const firstDotIndex = value.indexOf('.');
+        
+        if (firstDotIndex !== -1) {
+            value = value.substring(0, firstDotIndex + 1) + value.substring(firstDotIndex + 1).replace(/\./g, '');
+            const parts = value.split('.');
+            if (parts[1] && parts[1].length > 2) {
+                parts[1] = parts[1].substring(0, 2);
+                value = parts.join('.');
+            }
+        }
+        
+        return value ? parseFloat(value) : null;
+    }
+    
+    onMinPriceChanged(event: any): void {
+        const res = this.onInputPriceValidate(event);
+        
+        event.target.value = res;
+        this.minPriceFilter = res;
+    }
+    
+    onMaxPriceChanged(event: any): void {
+        const res = this.onInputPriceValidate(event);
+        
+        event.target.value = res;
+        this.maxPriceFilter =res;
+    }
+    
+    onCountryChanged(event:any): void {
+        this.countryCode = event.target.value;
+    }
+    
     onPageChanged(value: any) {
         console.log('catalog pager event fired' + value);
         event.preventDefault();
@@ -87,9 +130,9 @@ export class CatalogComponent implements OnInit {
         this.basketService.addItemToBasket(item);
     }
 
-    getCatalog(pageSize: number, pageIndex: number, brand?: number, type?: number) {
+    getCatalog(pageSize: number, pageIndex: number, brand?: number, type?: number, minPrice?: number, maxPrice?: number, countryCode?: string) {
         this.errorReceived = false;
-        this.service.getCatalog(pageIndex, pageSize, brand, type)
+        this.service.getCatalog(pageIndex, pageSize, brand, type, minPrice, maxPrice, countryCode)
             .pipe(catchError((err) => this.handleError(err)))
             .subscribe(catalog => {
                 this.catalog = catalog;

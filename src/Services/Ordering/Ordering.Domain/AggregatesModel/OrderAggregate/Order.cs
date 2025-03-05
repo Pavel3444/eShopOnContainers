@@ -24,7 +24,7 @@ public class Order
 
 
     // Draft orders have this set to true. Currently we don't check anywhere the draft status of an Order, but we could do it if needed
-    private bool _isDraft;
+    // private bool _isDraft;
 
     // DDD Patterns comment
     // Using a private collection field, better for DDD Aggregate's encapsulation
@@ -38,14 +38,13 @@ public class Order
     public static Order NewDraft()
     {
         var order = new Order();
-        order._isDraft = true;
         return order;
     }
 
     protected Order()
     {
         _orderItems = new List<OrderItem>();
-        _isDraft = false;
+        // _isDraft = false;
     }
 
     public Order(string userId, string userName, Address address, int cardTypeId, string cardNumber, string cardSecurityNumber,
