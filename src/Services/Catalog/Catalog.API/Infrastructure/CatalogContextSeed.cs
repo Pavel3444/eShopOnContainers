@@ -73,18 +73,21 @@ public class CatalogContextSeed
                                     .Where(x => x != null);
     }
 
-    private CatalogBrand CreateCatalogBrand(string brand)
+    private CatalogBrand CreateCatalogBrand(string csvLine)
     {
-        brand = brand.Trim('"').Trim();
-
-        if (String.IsNullOrEmpty(brand))
+        var columns = csvLine.Split(',');
+        var brandName = columns[0].Trim('"').Trim();
+        var countryCode = columns.Length > 1 ? columns[1].Trim('"').Trim() : "UNK";
+    
+        if (String.IsNullOrEmpty(brandName))
         {
             throw new Exception("catalog Brand Name is empty");
         }
 
         return new CatalogBrand
         {
-            Brand = brand,
+            Brand = brandName,
+            CountryCode = countryCode
         };
     }
 
@@ -92,11 +95,11 @@ public class CatalogContextSeed
     {
         return new List<CatalogBrand>()
         {
-            new() { Brand = "Azure"},
-            new() { Brand = ".NET" },
-            new() { Brand = "Visual Studio" },
-            new() { Brand = "SQL Server" },
-            new() { Brand = "Other" }
+            new() { Brand = "Azure", CountryCode = "USA"}, 
+            new() { Brand = ".NET", CountryCode = "GBR" },
+            new() { Brand = "Visual Studio", CountryCode = "USA" },
+            new() { Brand = "SQL Server", CountryCode = "USA" },
+            new() { Brand = "Other",  CountryCode ="UNK"}
         };
     }
 

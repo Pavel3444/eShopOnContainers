@@ -23,7 +23,7 @@ export class CatalogService {
         });
     }
 
-    getCatalog(pageIndex: number, pageSize: number, brand: number, type: number, minPrice: number, maxPrice: number): Observable<ICatalog> {
+    getCatalog(pageIndex: number, pageSize: number, brand: number, type: number, minPrice: number, maxPrice: number, countryCode: string): Observable<ICatalog> {
         let url = `${this.catalogUrl}?pageIndex=${pageIndex}&pageSize=${pageSize}`;
         
         let params = {
@@ -45,6 +45,10 @@ export class CatalogService {
         
         if (maxPrice != null) {
             url += `&maxPrice=${maxPrice}`;
+        }
+        
+        if (countryCode != null) {
+            url += `&countryCode=${countryCode}`;
         }
         
         return this.service.get(url, params).pipe<ICatalog>(tap((response: any) => {

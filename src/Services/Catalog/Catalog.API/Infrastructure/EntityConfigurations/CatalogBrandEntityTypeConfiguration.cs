@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.eShopOnContainers.Services.Catalog.API.Infrastructure.EntityConfigurations;
 
-class CatalogBrandEntityTypeConfiguration
-    : IEntityTypeConfiguration<CatalogBrand>
+class CatalogBrandEntityTypeConfiguration : IEntityTypeConfiguration<CatalogBrand>
 {
     public void Configure(EntityTypeBuilder<CatalogBrand> builder)
     {
@@ -16,5 +15,11 @@ class CatalogBrandEntityTypeConfiguration
         builder.Property(cb => cb.Brand)
             .IsRequired()
             .HasMaxLength(100);
+        
+        builder.Property(cb => cb.CountryCode)
+            .IsRequired()
+            .HasMaxLength(3)
+            .HasDefaultValue("GBR")
+            .ValueGeneratedNever();
     }
 }

@@ -10,4 +10,5 @@ public class IndexViewModel
     public PaginationInfo PaginationInfo { get; set; }
     public decimal? MinPriceFilterApplied { get; set; }
     public decimal? MaxPriceFilterApplied { get; set; }
+    public string? CountryCode { get; set; }
 }

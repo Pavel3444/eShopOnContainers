@@ -35,6 +35,15 @@
                          (change)="onMaxPriceChanged($event)"
                 />
             </div>
+            <div class="esh-catalog-filter-wrapper">
+                <label class="esh-catalog-label" for="maxPrice">Country of Origin</label>
+                <input type="text"
+                         class="form-control"
+                         id="countryCode"
+                         placeholder="Country Code"
+                         (change)="onCountryChanged($event)"
+                />
+            </div>
             <button 
                 type="button" 
                 class="btn btn-primary"

@@ -22,7 +22,7 @@ public class CatalogControllerTest
     public static IEnumerable<object[]> ItemsUnifiedTestData =>
         new List<object[]>
         {
-            new object[] { 4, 1, 1, 2, 10m, 100m, 6, 2 }
+            new object[] { 4, 1, 1, 2, 10m, 100m, "USA", 6, 2 }
         };
     
     public CatalogControllerTest()
@@ -34,6 +34,7 @@ public class CatalogControllerTest
         using var dbContext = new CatalogContext(_dbOptions);
         dbContext.Database.EnsureDeleted(); 
         dbContext.Database.EnsureCreated();
+        dbContext.AddRange(GetFakeBrands());
         dbContext.AddRange(GetFakeCatalog());
         dbContext.SaveChanges();
     }
@@ -41,8 +42,16 @@ public class CatalogControllerTest
     [Theory]
     [MemberData(nameof(ItemsUnifiedTestData))]
     public async Task ItemsUnifiedAsync_ReturnsFilteredPagedResults(
-        int pageSize, int pageIndex, int? catalogBrandId, int? catalogTypeId, decimal? minPrice, decimal? maxPrice,
-         int expectedTotalItems, int expectedItemsInPage)
+        int pageSize,
+        int pageIndex,
+        int? catalogBrandId,
+        int? catalogTypeId,
+        decimal? minPrice,
+        decimal? maxPrice,
+        string? countryCode,
+        int expectedTotalItems,
+        int expectedItemsInPage
+        )
     {
         var catalogContext = new CatalogContext(_dbOptions);
         
@@ -59,7 +68,9 @@ public class CatalogControllerTest
             catalogBrandId, 
             catalogTypeId, 
             minPrice, 
-            maxPrice
+            maxPrice,
+            null,
+            countryCode
         );
 
         Assert.IsType<ActionResult<PaginatedItemsViewModel<CatalogItem>>>(actionResult);
@@ -79,6 +90,13 @@ public class CatalogControllerTest
             new() { Id = 4, Name = "fakeItemD", CatalogTypeId = 2, CatalogBrandId = 1, Price = 13, PictureFileName = "fakeItemD.png" },
             new() { Id = 5, Name = "fakeItemE", CatalogTypeId = 2, CatalogBrandId = 1, Price = 15, PictureFileName = "fakeItemE.png" },
             new() { Id = 6, Name = "fakeItemF", CatalogTypeId = 2, CatalogBrandId = 1, Price = 12, PictureFileName = "fakeItemF.png" }
+        };
+    }
+    private List<CatalogBrand> GetFakeBrands()
+    {
+        return new List<CatalogBrand>
+        {
+            new CatalogBrand { Id = 1, Brand = "FakeBrand1", CountryCode = "USA" },
         };
     }
 }

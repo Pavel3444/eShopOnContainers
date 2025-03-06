@@ -8,7 +8,7 @@ public record CatalogItem
     public decimal Price { get; init; }
     public string PictureUri { get; init; }
     public int CatalogBrandId { get; init; }
-    public string CatalogBrand { get; init; }
+    public CatalogBrandDTO CatalogBrand { get; init; }
     public int CatalogTypeId { get; init; }
     public string CatalogType { get; init; }
 }

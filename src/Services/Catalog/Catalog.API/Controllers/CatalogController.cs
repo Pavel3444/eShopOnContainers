@@ -1,4 +1,5 @@
-﻿namespace Microsoft.eShopOnContainers.Services.Catalog.API.Controllers;
+﻿#nullable enable
+namespace Microsoft.eShopOnContainers.Services.Catalog.API.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
@@ -23,12 +24,14 @@ public class CatalogController : ControllerBase
     public async Task<ActionResult<PaginatedItemsViewModel<CatalogItem>>> ItemsUnifiedAsync(
         [FromQuery] int pageSize = 10,
         [FromQuery] int pageIndex = 0,
-        [FromQuery] string ids = null,
+        [FromQuery] string? ids = null,
         [FromQuery] int? catalogBrandId = null,
         [FromQuery] int? catalogTypeId = null,
         [FromQuery] decimal? minPrice = null,
         [FromQuery] decimal? maxPrice = null,
-        [FromQuery] string name = null)
+        [FromQuery] string? name = null, 
+        [FromQuery] string? countryCode = null
+        )
     {
     // request id
     if (!string.IsNullOrEmpty(ids))
@@ -41,7 +44,7 @@ public class CatalogController : ControllerBase
         return Ok(new PaginatedItemsViewModel<CatalogItem>(pageIndex, pageSize, items.Count, items));
     }
     
-    IQueryable<CatalogItem> query = _catalogContext.CatalogItems;
+    IQueryable<CatalogItem> query = _catalogContext.CatalogItems.Include(c => c.CatalogBrand);
 
     // request name
     if (!string.IsNullOrEmpty(name))
@@ -72,6 +75,10 @@ public class CatalogController : ControllerBase
         query = query.Where(c => c.Price <= maxPrice.Value);
     }
 
+    if (!string.IsNullOrEmpty(countryCode))
+    {
+        query = query.Where(c => c.CatalogBrand.CountryCode == countryCode);
+    }
     
     var totalItems = await query.LongCountAsync();
     

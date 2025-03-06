@@ -49,7 +49,7 @@ public static class API
 
     public static class Catalog
     {
-        public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice)
+        public static string GetAllCatalogItems(string baseUri, int page, int take, int? brand, int? type, decimal? minPrice, decimal? maxPrice, string? countryCode)
         {
             var queryParams = new List<string>
             {
@@ -75,6 +75,11 @@ public static class API
             if (maxPrice.HasValue)
             {
                 queryParams.Add($"maxPrice={maxPrice.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)}");
+            }
+
+            if (countryCode != null)
+            {
+                queryParams.Add($"countryCode={countryCode}");
             }
 
             return $"{baseUri}items?{string.Join("&", queryParams)}";

@@ -13,6 +13,7 @@ public class CatalogController : Controller
         int? page,
         decimal? MinPriceFilterApplied,
         decimal? MaxPriceFilterApplied,
+        string? CountryCode,
         [FromQuery] string errorMsg)
     {
         var itemsPage = 9;
@@ -23,7 +24,9 @@ public class CatalogController : Controller
             BrandFilterApplied,
             TypesFilterApplied,
             MinPriceFilterApplied,
-            MaxPriceFilterApplied);
+            MaxPriceFilterApplied,
+            CountryCode
+            );
     
         var vm = new IndexViewModel()
         {
@@ -34,6 +37,7 @@ public class CatalogController : Controller
             TypesFilterApplied = TypesFilterApplied ?? 0,
             MinPriceFilterApplied = MinPriceFilterApplied,
             MaxPriceFilterApplied = MaxPriceFilterApplied,
+            CountryCode = CountryCode,
             PaginationInfo = new PaginationInfo()
             {
                 ActualPage = page ?? 0,
